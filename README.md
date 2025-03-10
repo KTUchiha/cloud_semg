@@ -376,16 +376,11 @@ To stop all running services, run the `stop_all.sh` script. This script terminat
 ---
 
 
-
-
----
-
 ## Related Research
 
 This system is based on the research paper:  
 **A Cloud-Based Personalized sEMG Hand Gesture Classification System Using Convolutional Neural Networks**  
 by Kaavya Tatavarty, Maxwell Johnson, and Boris Rubinsky.  
-For more details, please refer to the accompanying PDF document.
 
 ---
 
@@ -443,6 +438,5 @@ Ensure that any personally identifiable information (PII) is anonymized or encry
 
 ## Contact
 
-For questions or support, please contact:  
-- **Email:** kaavya.tatavarty@gmail.com
+For questions or support, please raise issues.
 
