@@ -20,7 +20,7 @@ Below are the various System Components
 ![System Architecture](/system_architecture.png "System Architecture")
 
 ## Project Structure
-
+``` text
 ├── README.md
 ├── ml_model
 │   ├── TrainMLJob.py        # Script for training the CNN model
@@ -49,7 +49,7 @@ Below are the various System Components
 ├── arduino
 │   └── arduinocode.ino      # Arduino sketch for sensor data transmission
 
-
+```
 ---
 
 
