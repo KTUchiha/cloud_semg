@@ -1,5 +1,5 @@
 #!/bin/bash
-PROJECT_DIR=/home/kaavya/emg
+PROJECT_DIR=/app
 LOGS=$PROJECT_DIR/logs
 
 echo "Stopping NatServer"

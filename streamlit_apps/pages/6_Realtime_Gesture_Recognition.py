@@ -8,14 +8,14 @@ from scipy.interpolate import interp1d
 import numpy as np
 from collections import Counter
 import re
-
+import os
 # Initialize PostgreSQL connection
 def init_connection():
     return psycopg2.connect(
-        host="localhost",
-        database="sensordb",
-        user="kaavya",
-        password="sEMG1234"  # Replace with your PostgreSQL password
+        host=os.environ['POSTGRES_HOST'],
+        database=os.environ['POSTGRES_DB'],
+        user=os.environ['POSTGRES_USER'],
+        password=os.environ['POSTGRES_PASSWORD']
     )
 
 conn = init_connection()

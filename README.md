@@ -364,6 +364,116 @@ To stop all running services, run the `stop_all.sh` script. This script terminat
 ./stop_all.sh
 ```
 
+--- 
+Below is an updated Docker installation section that emphasizes the use of the `--create-db` flag only once to initialize the database. Once the database is created, you only need to mount the external data directory (e.g., `pgdata`) on subsequent runs.
+
+---
+
+## Docker Installation and Deployment for Testing Only
+
+This project is containerized using a single Docker image that bundles the FastAPI server, PostgreSQL, NATS server, Streamlit UI, UDP server, and other components. Follow these steps to build and run the system using Docker.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) installed on your system.
+- (Optional) Create a directory on your host to persist PostgreSQL data (e.g., `pgdata`).
+
+### Building the Docker Image
+
+1. Open a terminal and navigate to the project’s root directory (where the `Dockerfile` is located).
+
+2. Build the Docker image with the following command:
+
+   ```bash
+   docker build -t semg-system .
+   ```
+
+   This command downloads the base image (Python 3.8-slim), installs required system packages (including PostgreSQL, NATS, and Supervisor), and copies your application files into the image.
+
+### Running the Container for the First Time
+
+To initialize the database schema, run the container with the `--create-db` flag. This flag only needs to be run once to set up the database. Subsequent starts do not require this flag, as long as you mount the same external directory to persist your PostgreSQL data.
+
+1. **Create a host directory for PostgreSQL data:**
+
+   ```bash
+   mkdir -p pgdata
+   ```
+
+2. **Run the container with database initialization:**
+
+   ```bash
+   docker run -d \
+     -v "$(pwd)/pgdata":/var/lib/postgresql/data \
+     -p 8000:8000 \
+     -p 8501:8501 \
+     -p 8081:8081 \
+     -p 4222:4222 \
+     -p 5432:5432 \
+     semg-system --create-db
+   ```
+
+   **Explanation:**
+   - The `-v "$(pwd)/pgdata":/var/lib/postgresql/data` flag mounts the host directory `pgdata` (created in the current directory) to the PostgreSQL data directory. This ensures that your database files persist even if the container is removed.
+   - The `--create-db` argument tells the entrypoint script to wait for PostgreSQL to be ready, create the `sensordb` database if it doesn't exist, and run the SQL schema file.
+   - **Note:** The `--create-db` flag only needs to be used the first time to initialize the database schema. After the database is set up and the data is stored in `pgdata`, you can start the container without this flag.
+
+### Running the Container Subsequently
+
+Once the database has been created and the schema is in place, you can start your container without the `--create-db` flag. Just ensure that you mount the same external directory so that PostgreSQL uses the persisted data.
+
+```bash
+docker run -d \
+  -v "$(pwd)/pgdata":/var/lib/postgresql/data \
+  -p 8000:8000 \
+  -p 8501:8501 \
+  -p 8081:8081 \
+  -p 4222:4222 \
+  -p 5432:5432 \
+  semg-system
+```
+
+### Verifying the Deployment
+
+1. **Check Logs:**  
+   You can view the container logs to verify that all services have started correctly:
+
+   ```bash
+   docker logs <container_id>
+   ```
+
+2. **Access Endpoints:**  
+   - **FastAPI:** Open [http://localhost:8000/docs](http://localhost:8000/docs) in your browser to access the FastAPI Swagger UI.
+   - **Streamlit:** Open [http://localhost:8501](http://localhost:8501) to access the web-based user interface.
+   - **PostgreSQL:** Use a PostgreSQL client or run `pg_isready -h localhost -p 5432` inside the container to confirm that PostgreSQL is running.
+   - **NATS:** Verify that the NATS server is running on port 4222 (or use a NATS client to connect).
+
+### Stopping the System
+
+If you need to stop the container, you can run:
+
+```bash
+docker stop <container_id>
+```
+
+Or, if you prefer to use the provided shell script (from within the container), run:
+
+```bash
+./stop_all.sh
+```
+
+### Notes
+
+- **Database Initialization:**  
+  The `--create-db` flag is used only the first time to initialize the `sensordb` database and create the necessary schema. In subsequent runs, simply start the container with the volume mount, and the existing database will be reused.
+- **Environment Variables:**  
+  Environment variables for PostgreSQL and NATS are set in the Dockerfile. You can override these at runtime using the `-e` flag if needed.
+- **Supervisor:**  
+  Supervisor manages the processes for PostgreSQL, NATS, and your application within the container.
+
+---
+
+
 
 ## Training and Inference
 

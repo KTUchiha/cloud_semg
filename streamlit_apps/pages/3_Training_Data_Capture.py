@@ -7,14 +7,14 @@ from datetime import datetime, timedelta
 import psycopg2
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
-
+import os
 # Initialize database connection
 def init_connection():
     return psycopg2.connect(
-        host="localhost",       # Adjust as necessary
-        database="sensordb",
-        user="kaavya",
-        password="sEMG1234"
+        host=os.environ['POSTGRES_HOST'],
+        database=os.environ['POSTGRES_DB'],
+        user=os.environ['POSTGRES_USER'],
+        password=os.environ['POSTGRES_PASSWORD']
     )
 
 # Initialize connection

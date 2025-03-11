@@ -1,5 +1,5 @@
 #!/bin/bash
-PROJECT_DIR=/home/kaavya/emg
+PROJECT_DIR=/app
 LOGS=$PROJECT_DIR/logs
 mkdir -p $LOGS
 echo "Starting NatServer"
@@ -15,4 +15,5 @@ echo "Starting ML Model Server"
 cd $PROJECT_DIR/ml_model
 nohup uvicorn api:app --reload --host='0.0.0.0' --port=8000 2>&1> $LOGS/api.logs & 
 nohup python3 nat_inference.py 2>&1> $LOGS/nat_inference.logs & 
+exec sleep infinity
 

@@ -1,0 +1,28 @@
+# Ignore the PostgreSQL data directory
+pgdata/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.env/
+venv/
+ENV/
+env/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Git repository files
+.git
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs and temporary files
+*.log

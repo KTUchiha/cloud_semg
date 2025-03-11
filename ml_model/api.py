@@ -9,6 +9,8 @@ import joblib
 import psycopg2
 import json
 import pickle
+import os
+import asyncio
 
 app = FastAPI()
 
@@ -70,7 +72,8 @@ def load_latest_user_artifacts():
     conn.close()
 
     if not results:
-        raise Exception("No models found in the database.")
+        print("Warning: No models found in the database.")
+        return
 
     for userid, model_blob, class_mapping_json, scaler_blob, sensors_used_json in results:
         # Deserialize the model state_dict
@@ -103,6 +106,17 @@ def load_latest_user_artifacts():
             "sensors_used": sensors_used,
             "class_mapping": class_mapping
         }
+    print("Loaded models for users:", list(user_artifacts.keys()))
+
+# Periodically poll for new models
+async def poll_new_models():
+    while True:
+        try:
+            load_latest_user_artifacts()
+            print("Polled for new models; current artifacts:", list(user_artifacts.keys()))
+        except Exception as e:
+            print("Error during polling for new models:", e)
+        await asyncio.sleep(60)  # Poll every 60 seconds
 
 # Preprocessing function
 def preprocess(data, scaler, sensors_used):
@@ -164,17 +178,22 @@ async def predict(input_data: InputData):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+# On startup, try loading models and start polling for new models
 @app.on_event("startup")
 async def startup_event():
-    # Load only the most recent artifacts for each user at startup
-    load_latest_user_artifacts()
+    try:
+        load_latest_user_artifacts()
+    except Exception as e:
+        print("Startup warning: No models loaded initially. Polling will continue. Error:", e)
+    # Start background task to poll for new models
+    asyncio.create_task(poll_new_models())
 
 def get_db_connection():
     return psycopg2.connect(
-        host="localhost",
-        database="sensordb",
-        user="XXXXXX", # Your username here
-        password="XXXXXX"  # Your password here
+        host=os.environ['POSTGRES_HOST'],
+        database=os.environ['POSTGRES_DB'],
+        user=os.environ['POSTGRES_USER'],
+        password=os.environ['POSTGRES_PASSWORD']
     )
 
 if __name__ == "__main__":

@@ -1,16 +1,15 @@
 import streamlit as st
 import psycopg2
 import pandas as pd
-
+import os
 # Set up a connection to the PostgreSQL database
 def init_connection():
     return psycopg2.connect(
-        host="localhost",       # Adjust as necessary
-        database="sensordb",
-        user="kaavya",
-        password="sEMG1234"
+        host=os.environ['POSTGRES_HOST'],
+        database=os.environ['POSTGRES_DB'],
+        user=os.environ['POSTGRES_USER'],
+        password=os.environ['POSTGRES_PASSWORD']
     )
-
 # Initialize connection
 conn = init_connection()
 cursor = conn.cursor()

@@ -2,14 +2,14 @@ import requests
 import psycopg2
 import pandas as pd
 import json
-
+import os
 # Database connection
 def get_db_connection():
     return psycopg2.connect(
-        host="localhost",
-        database="sensordb",
-        user="kaavya",
-        password=""  # Your password here
+        host=os.environ['POSTGRES_HOST'],
+        database=os.environ['POSTGRES_DB'],
+        user=os.environ['POSTGRES_USER'],
+        password=os.environ['POSTGRES_PASSWORD']
     )
 
 # Function to fetch data from user_sensor table in batches

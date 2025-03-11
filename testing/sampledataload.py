@@ -1,14 +1,14 @@
 import psycopg2
 import random
 from datetime import datetime, timedelta
-
+import os
 # Initialize database connection
 def init_connection():
     return psycopg2.connect(
-        host="localhost",  # Adjust to your setup
-        database="sensordb",
-        user="kaavya",
-        password=""  # Your password here
+        host=os.environ['POSTGRES_HOST'],
+        database=os.environ['POSTGRES_DB'],
+        user=os.environ['POSTGRES_USER'],
+        password=os.environ['POSTGRES_PASSWORD']
     )
 
 # Function to insert a single sensor data entry into the user_sensor table

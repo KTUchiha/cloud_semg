@@ -4,24 +4,28 @@ from datetime import datetime
 import sys
 import psycopg2
 from nats.aio.client import Client as NATS
-
+import os
 # Initialize NATS client
+NATS_SERVER = os.environ['NATS_SERVER']
+NATS_USER = os.environ['NATS_USER']
+NATS_PASSWORD = os.environ['NATS_PASSWORD']
+NATS_TOPIC = os.environ['NATS_TOPIC']
 async def initialize_nats():
     nc = NATS()
     await nc.connect(
-        servers=["nats://127.0.0.1:4222"],
-        user="XXXXXX",
-        password="XXXXXXX"
+        servers=[NATS_SERVER],
+        user=NATS_USER,
+        password=NATS_PASSWORD
     )
     return nc
 
 # Initialize PostgreSQL database connection
 def initialize_db():
     conn = psycopg2.connect(
-        host="localhost",       # Adjust as necessary
-        database="sensordb",
-        user="XXXXXXX",
-        password="XXXXXXXX"
+        host=os.environ['POSTGRES_HOST'],
+        database=os.environ['POSTGRES_DB'],
+        user=os.environ['POSTGRES_USER'],
+        password=os.environ['POSTGRES_PASSWORD']
     )
     return conn
 
@@ -66,7 +70,7 @@ async def handle_data(conn, data, addr, nc):
             "sensor_values": sensor_values,
             "timestamp": ts
         }
-        await nc.publish("sensor.data", str(message).encode())
+        await nc.publish(NATS_TOPIC, str(message).encode())
         print(f"Published data to NATS: {message}")
     except Exception as e:
         print(f"Failed to handle data from {addr}: {data}. Error: {e}")

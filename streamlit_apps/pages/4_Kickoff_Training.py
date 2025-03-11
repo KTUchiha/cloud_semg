@@ -6,13 +6,14 @@ import cv2
 import numpy as np
 import tempfile
 import subprocess
+import os
 # Initialize database connection
 def init_connection():
     return psycopg2.connect(
-        host="localhost",  # Adjust as necessary
-        database="sensordb",
-        user="kaavya",
-        password="sEMG1234"  # Your password here
+        host=os.environ['POSTGRES_HOST'],
+        database=os.environ['POSTGRES_DB'],
+        user=os.environ['POSTGRES_USER'],
+        password=os.environ['POSTGRES_PASSWORD']
     )
 
 # Initialize connection

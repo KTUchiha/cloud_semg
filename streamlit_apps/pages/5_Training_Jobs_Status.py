@@ -2,14 +2,14 @@ import streamlit as st
 import psycopg2
 import pandas as pd
 import plotly.express as px
-
+import os
 # Initialize database connection
 def init_connection():
     return psycopg2.connect(
-        host="localhost",
-        database="sensordb",
-        user="kaavya",
-        password="sEMG1234"  # Your password here
+        host=os.environ['POSTGRES_HOST'],
+        database=os.environ['POSTGRES_DB'],
+        user=os.environ['POSTGRES_USER'],
+        password=os.environ['POSTGRES_PASSWORD']
     )
 
 # Function to fetch users

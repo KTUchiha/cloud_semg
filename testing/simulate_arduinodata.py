@@ -2,7 +2,7 @@ import socket
 import time
 import random
 from datetime import datetime
-
+import os
 # Server address and port
 UDP_IP = "127.0.0.1"  # Replace with the actual IP address of the UDP server
 UDP_IP="74.208.201.225"

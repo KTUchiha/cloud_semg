@@ -3,19 +3,15 @@ import requests
 import psycopg2
 from nats.aio.client import Client as NATS
 from datetime import datetime
-
-NATS_SERVER = "nats://127.0.0.1:4222"
-NATS_USER = "XXXXXXX" # Your username here
-NATS_PASSWORD = "XXXXXXX" # Your password here
-NATS_TOPIC = "sensor.data"
+import os 
+NATS_SERVER = os.environ['NATS_SERVER']
+NATS_USER = os.environ['NATS_USER']
+NATS_PASSWORD = os.environ['NATS_PASSWORD']
+NATS_TOPIC = os.environ['NATS_TOPIC']
 API_URL = "http://127.0.0.1:8000/predict"
 BATCH_SIZE = 64
 
-# PostgreSQL connection parameters
-POSTGRES_HOST = "localhost"
-POSTGRES_DB = "sensordb"
-POSTGRES_USER = "XXXXXXX"
-POSTGRES_PASSWORD = "XXXXXXXX"  # Your password here
+
 
 # List to store received data
 data_list = []
@@ -24,10 +20,10 @@ data_list = []
 async def store_api_response(userid, response):
     try:
         conn = psycopg2.connect(
-            host=POSTGRES_HOST,
-            database=POSTGRES_DB,
-            user=POSTGRES_USER,
-            password=POSTGRES_PASSWORD
+            host=os.environ['POSTGRES_HOST'],
+            database=os.environ['POSTGRES_DB'],
+            user=os.environ['POSTGRES_USER'],
+            password=os.environ['POSTGRES_PASSWORD']
         )
         cursor = conn.cursor()
         timestamp = datetime.now().isoformat()
