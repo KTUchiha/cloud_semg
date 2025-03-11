@@ -364,9 +364,6 @@ To stop all running services, run the `stop_all.sh` script. This script terminat
 ./stop_all.sh
 ```
 
---- 
-Below is an updated Docker installation section that emphasizes the use of the `--create-db` flag only once to initialize the database. Once the database is created, you only need to mount the external data directory (e.g., `pgdata`) on subsequent runs.
-
 ---
 
 ## Docker Installation and Deployment for Testing Only
