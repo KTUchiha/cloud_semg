@@ -361,3 +361,46 @@ GRANT ALL ON TABLE training_job_artifacts TO semguser;
 
 GRANT ALL ON SCHEMA public TO semguser;
 GRANT ALL ON SCHEMA public TO public;
+
+
+-- Table to store haptic mappings for gestures
+CREATE TABLE gesture_haptic_mapping (
+    mapping_id SERIAL PRIMARY KEY,
+    gestureid INTEGER NOT NULL REFERENCES user_gestures(gestureid) ON DELETE CASCADE,
+    userid INTEGER NOT NULL REFERENCES users(userid) ON DELETE CASCADE,
+    sequence_order INTEGER NOT NULL, -- Order in the haptic sequence
+    
+    -- Motor activations (true/false for each finger motor)
+    thumb_tip BOOLEAN NOT NULL DEFAULT false,
+    thumb_base BOOLEAN NOT NULL DEFAULT false,
+    index_tip BOOLEAN NOT NULL DEFAULT false,
+    index_base BOOLEAN NOT NULL DEFAULT false,
+    middle_tip BOOLEAN NOT NULL DEFAULT false,
+    middle_base BOOLEAN NOT NULL DEFAULT false,
+    ring_tip BOOLEAN NOT NULL DEFAULT false,
+    ring_base BOOLEAN NOT NULL DEFAULT false,
+    pinky_tip BOOLEAN NOT NULL DEFAULT false,
+    pinky_base BOOLEAN NOT NULL DEFAULT false,
+    
+    -- Timestamps for audit and management
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Constraint to ensure no more than 4 motors are active at once
+    CONSTRAINT max_four_motors CHECK (
+        (CASE WHEN thumb_tip THEN 1 ELSE 0 END) +
+        (CASE WHEN thumb_base THEN 1 ELSE 0 END) +
+        (CASE WHEN index_tip THEN 1 ELSE 0 END) +
+        (CASE WHEN index_base THEN 1 ELSE 0 END) +
+        (CASE WHEN middle_tip THEN 1 ELSE 0 END) +
+        (CASE WHEN middle_base THEN 1 ELSE 0 END) +
+        (CASE WHEN ring_tip THEN 1 ELSE 0 END) +
+        (CASE WHEN ring_base THEN 1 ELSE 0 END) +
+        (CASE WHEN pinky_tip THEN 1 ELSE 0 END) +
+        (CASE WHEN pinky_base THEN 1 ELSE 0 END) <= 4
+    )
+);
+
+-- Index for faster lookups
+CREATE INDEX idx_gesture_haptic_mapping_gesture_id ON gesture_haptic_mapping(gestureid);
+CREATE INDEX idx_gesture_haptic_mapping_user_id ON gesture_haptic_mapping(userid);
